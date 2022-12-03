@@ -9,6 +9,7 @@ move_scores = %{rock: 1, paper: 2, scissors: 3}
 game_scores = %{loss: 0, draw: 3, win: 6}
 opponent = %{"A" => :rock, "B" => :paper, "C" => :scissors}
 me = %{"X" => :rock, "Y" => :paper, "Z" => :scissors}
+outcome = %{"X" => :loss, "Y" => :draw, "Z" => :win}
 
 games = contents |>
   String.split("\n", trim: true) |>
@@ -29,6 +30,21 @@ game_outcome = fn (op_move, my_move) ->
       :win
     else
       :loss
+    end
+  end
+end
+
+game_outcome_part2 = fn (op_move, req_outcome) ->
+  if (req_outcome == :draw) do
+    op_move
+  else
+    op_move_hierarchy = Enum.find_index(hierarchy, fn x -> x == op_move end)
+    {:ok, my_winning_move} = Enum.fetch(hierarchy, op_move_hierarchy-1)
+    {:ok, my_losing_move} = Enum.fetch(hierarchy, rem(op_move_hierarchy+1, 2))
+    if (req_outcome == :win) do
+      my_winning_move
+    else
+      my_losing_move
     end
   end
 end
